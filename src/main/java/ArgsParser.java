@@ -1,4 +1,5 @@
 import exception.FlagNotDefinedException;
+import exception.TypeMismatchException;
 import flags.Flag;
 
 public class ArgsParser {
@@ -21,6 +22,16 @@ public class ArgsParser {
                 Flag flag = schema.getFlag(flagName);
                 if (flag == null) {
                     throw new FlagNotDefinedException(flagName);
+                }
+
+                String value = flag.getValue(argsArray);
+                System.out.println("value = " + value);
+                System.out.println(flag.getClass());
+                try {
+                    flag.convert(value);
+                } catch (Exception e) {
+                    e.getStackTrace();
+                    throw new TypeMismatchException("Flag '" + flagName + "' need '" + flag.getType() + "' value.");
                 }
             }
         }

@@ -1,5 +1,6 @@
 package flags;
 
+import com.google.common.collect.Lists;
 import exception.TypeNotSupportedException;
 
 import java.util.Arrays;
@@ -35,7 +36,12 @@ public abstract class Flag {
         return name;
     }
 
-    public abstract Object convert(String valueAsString);
+    public Object convert(String valueAsString) {
+        if (isList(valueAsString)) {
+            return toList(valueAsString);
+        }
+        return convertSingleValue(valueAsString);
+    }
 
     public void setName(String name) {
         this.name = name;
@@ -70,5 +76,21 @@ public abstract class Flag {
         return true;
     }
 
+    protected abstract Object convertSingleValue(String valueAsString);
+
+    private List<Object> toList(String valueAsString) {
+        List<Object> values = Lists.newArrayList();
+        for (String s : valueAsString.split(",")) {
+            values.add(this.convertSingleValue(s));
+        }
+        return values;
+    }
+
+    private boolean isList(String valueAsString) {
+        return valueAsString.contains(",");
+    }
+
     protected abstract String getDefaultValue();
+
+    public abstract String getType();
 }
